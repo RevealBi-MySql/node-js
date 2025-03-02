@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reveal Sdk - Create New Dashboard</title>
+</head>
+
+<body>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
+    <script src="https://dl.revealbi.io/reveal/libs/1.7.2/infragistics.reveal.js"></script>
+
+    <select name="customers" id="customerId">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="11">11</option>
+        <option value="12">12</option>
+    </select>
+    <p></p>
+
+    <div id="viewer"  style="height: calc(100vh - 20px); width: 100%;"></div>
+
+    <script type="text/javascript">
+        $.ig.RevealSdkSettings.setBaseUrl("http://localhost:5112/");
+
+        $.ig.RevealSdkSettings.setAdditionalHeadersProvider(function (url) {
+            return headers;
+        });
+
+        const headers = {};
+     
+        var revealView = new $.ig.RevealView("#viewer");
+        revealView.interactiveFilteringEnabled = true;
+        revealView.startInEditMode = true;    
+        
+        revealView.onDataSourcesRequested = (callback) => {                    
+            // Set values to pass to server
+            var selectedCustomerId = $('#customerId').val();
+            headers["x-header-one"] = selectedCustomerId;
+            
+            var mySqlDataSource = new $.ig.RVMySqlDataSource();
+            mySqlDataSource.id="sqlServer";
+            mySqlDataSource.title = "MySql Server Data Source";
+            mySqlDataSource.subtitle = "Full Northwind Database";
+
+
+            var mySqlDataSourceItem1 = new $.ig.RVMySqlDataSourceItem(mySqlDataSource);
+            mySqlDataSourceItem1.id="customer_orders";
+            mySqlDataSourceItem1.title = "Customer Orders";
+            mySqlDataSourceItem1.subtitle = "Custom Query w/ Ad-Hoc SQL";
+
+            var mySqlDataSourceItem2 = new $.ig.RVMySqlDataSourceItem(mySqlDataSource);
+            mySqlDataSourceItem2.id="sp_customer_orders";
+            mySqlDataSourceItem2.title = "Stored Proc Customer_Orders";
+            mySqlDataSourceItem2.subtitle = "Stored Proc - Parameter";
+
+            var mySqlDataSourceItem3 = new $.ig.RVMySqlDataSourceItem(mySqlDataSource);
+            mySqlDataSourceItem3.id="customer_orders_details";
+            mySqlDataSourceItem3.title = "All Customer Orders";
+            mySqlDataSourceItem3.subtitle = "View in Custom Query";
+
+            callback(new $.ig.RevealDataSources([mySqlDataSource], 
+                [mySqlDataSourceItem1, mySqlDataSourceItem2, mySqlDataSourceItem3], false));
+           };
+    </script>
+</body>
+
+</html>
